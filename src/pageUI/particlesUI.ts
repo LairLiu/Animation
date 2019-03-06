@@ -10,7 +10,7 @@
  *
  *
  */
-class fireworksUI extends wy.BaseSprite {
+class particlesUI extends wy.BaseSprite {
 	constructor() {
 		super();
 		this.width = 640;

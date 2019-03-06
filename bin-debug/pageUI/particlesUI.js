@@ -18,18 +18,18 @@ var __extends = (this && this.__extends) || function (d, b) {
  *
  *
  */
-var fireworksUI = (function (_super) {
-    __extends(fireworksUI, _super);
-    function fireworksUI() {
+var particlesUI = (function (_super) {
+    __extends(particlesUI, _super);
+    function particlesUI() {
         var _this = _super.call(this) || this;
         _this.width = 640;
         _this.height = 1036;
         _this.createChildren();
         return _this;
     }
-    fireworksUI.prototype.createChildren = function () {
+    particlesUI.prototype.createChildren = function () {
         //动画
     };
-    return fireworksUI;
+    return particlesUI;
 }(wy.BaseSprite));
-__reflect(fireworksUI.prototype, "fireworksUI");
+__reflect(particlesUI.prototype, "particlesUI");

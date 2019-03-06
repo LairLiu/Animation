@@ -6,79 +6,118 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-/**
- *
- *@author
- *
- */
 var fireworks = (function (_super) {
     __extends(fireworks, _super);
+    /**
+     * constructor
+     */
     function fireworks() {
-        return _super.call(this) || this;
-    }
-    fireworks.prototype.createChildren = function () {
-        _super.prototype.createChildren.call(this);
-    };
-    fireworks.prototype.show = function (data) {
-        _super.prototype.show.call(this, data);
+        var _this = _super.call(this) || this;
+        // bg
         var bg = wy.Tools.createSprBtn(0, 0, 640, 1236, 0xffffff, 1);
-        this.addChild(bg);
-        var imageLoader = new egret.ImageLoader();
-        imageLoader.load("./resource/assets/build.png");
-        imageLoader.addEventListener(egret.Event.COMPLETE, this.loaderComplete, this);
-        // wy.Tween.do(this);
+        _this.addChild(bg);
+        bg.touchEnabled = true;
+        bg.addEventListener(egret.TouchEvent.TOUCH_BEGIN, _this.shoot, _this);
+        // draw fireworks
+        _this.draworks();
+        return _this;
+    }
+    /**
+     * @description 发射
+     * @author Lair
+     * @date 2019-03-06
+     * @private
+     * @memberof fireworks
+     */
+    fireworks.prototype.shoot = function () {
+        this.draworks();
     };
-    fireworks.prototype.loaderComplete = function (e) {
-        var imageLoader = e.currentTarget;
-        var imageData = imageLoader.data;
-        var texture = new egret.Texture();
-        texture._setBitmapData(imageData);
-        var image = new egret.Bitmap(texture);
-        this.addChild(image);
-        console.log(imageData);
-        console.log(imageData.width);
-        console.log(imageData.height);
-        var s_w = 10; // 像素点的大小;
-        var s_h = 10; // 像素点的大小;
-        var rows = Math.ceil(imageData.width / s_w); // 行数
-        var cols = Math.ceil(imageData.height / s_h); // 列数
-        var len = rows * cols; // 总数量
-        var pos = 0; //当前位置
-        var par_x = 0, par_y = 0; // 粒子所在位置
-        var textureArr = [];
-        console.log(rows, cols);
-        for (var i = 0; i < rows; i++) {
-            for (var j = 0; j < cols; j++) {
-                par_x = j * s_w;
-                par_y = i * s_h;
-                var rect = new egret.Rectangle(par_x, par_y, s_w, s_h);
-                var texture_1 = new egret.RenderTexture();
-                texture_1.drawToTexture(image, rect);
-                // textureArr.push({ _x: par_x, _y: par_y, _texture: texture });
-                var bitmap = new egret.Bitmap(texture_1);
-                this.addChild(bitmap);
-                bitmap.width = s_w;
-                bitmap.height = s_h;
-                bitmap.x = par_x;
-                bitmap.y = par_y;
-                pos++;
-            }
+    /**
+     * @description 创建烟花
+     * @author Lair
+     * @date 2019-03-06
+     * @private
+     * @memberof firewroks
+     */
+    fireworks.prototype.draworks = function () {
+        var _this = this;
+        var rocket = new egret.Shape();
+        rocket.graphics.beginFill(0, 1);
+        rocket.graphics.drawCircle(0, 0, 10);
+        rocket.graphics.endFill();
+        rocket.x = 320;
+        rocket.y = 1000;
+        this.addChild(rocket);
+        egret.Tween.get(rocket).to({ y: 300 }, 1000)
+            .to({ alpha: 0 })
+            .call(function () {
+            console.log(_this.y + "," + rocket.y);
+            _this.boom(rocket.x, rocket.y);
+        }, this);
+    };
+    /**
+     * @description 烟花炸开效果
+     * @author Lair
+     * @date 2019-03-06
+     * @private
+     * @param {number} _x
+     * @param {number} _y
+     * @memberof fireworks
+     */
+    fireworks.prototype.boom = function (_x, _y) {
+        console.log("boom");
+        var ran_num = RandomUtils.limitInteger(20, 40);
+        // let ran_num = 3;
+        for (var i = 0; i < ran_num; i++) { }
+        var craate_num = 0;
+        var create_key = setInterval(function () {
+            console.log("" + create_key);
+            update();
+            craate_num > ran_num ? clearInterval(create_key) : craate_num++;
+        }, 20);
+        console.log("-----" + create_key);
+        var self = this;
+        function update() {
+            var ceil = create();
+            self.addChild(ceil);
+            move(ceil);
         }
-        console.log(pos);
-        // console.log(textureArr);
-        wy.Tools.removeFromParent(image);
-        // for (){
-        // }
-    };
-    fireworks.prototype.hide = function () {
-        _super.prototype.hide.call(this);
-    };
-    fireworks.prototype.onTouchTap = function (e) {
-        switch (e.currentTarget) {
-            default:
-                break;
+        function create() {
+            var ran_raduis = RandomUtils.limitInteger(10, 20);
+            var ceil = new egret.Shape();
+            ceil.graphics.beginFill(0xff0000, 1);
+            ceil.graphics.drawCircle(0, 0, ran_raduis);
+            ceil.graphics.endFill();
+            ceil.x = _x;
+            ceil.y = _y;
+            return ceil;
+        }
+        function move(ceil) {
+            // 随机位置发射
+            // let ran_x = RandomUtils.limitInteger(-200, 200);
+            // let ran_y = RandomUtils.limitInteger(-200, 200);
+            // egret.Tween.get(ceil).to({ x: _x + ran_x, y: _y + ran_y, scaleX: 0, scaleY: 0 }, 1000);
+            // 以烟花的位置为中心呈圆形炸开
+            var ran_range = RandomUtils.limitInteger(100, 200); // 随机爆炸范围
+            var speed = 2; // 爆炸初速度
+            var gravity = 0.2;
+            var shrink = Math.random() * 0.05 + 0.93;
+            var resistance = 1; // 爆炸衰减速度，大于1则为加速度
+            var ran_angle = Math.random() * Math.PI * 2; // 随机弧度
+            var speed_x = Math.cos(ran_angle) * speed; // 横向速度
+            var speed_y = Math.sin(ran_angle) * speed; // 纵向向速度
+            var num = 0;
+            var run_key = setInterval(function () {
+                ceil.x += speed_x * resistance;
+                ceil.y += speed_y * resistance;
+                ceil.y += gravity;
+                ceil.scaleX *= shrink;
+                ceil.scaleY *= shrink;
+                // console.log(`${num}`);
+                num > 100 ? clearInterval(run_key) : num++;
+            }, 30);
         }
     };
     return fireworks;
-}(fireworksUI));
+}(wy.BaseSprite));
 __reflect(fireworks.prototype, "fireworks");
